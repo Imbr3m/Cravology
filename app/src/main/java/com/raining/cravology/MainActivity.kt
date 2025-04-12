@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.raining.cravology
 
 import android.os.Bundle
@@ -34,11 +32,99 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun CravologyApp() {
     // Surface will be the container for everything
     Surface(color = MaterialTheme.colorScheme.background) {
+
+        // flavor lists
+        val allOptions = listOf(
+            "Salty", "Sweet", "Spicy", "Sour", "Umami",
+            "Crunchy", "Soft", "Chewy", "Crispy",
+            "Hot", "Cold", "Bitter"
+        )
+
+        // tracking the flavors
+        var selectedOptions by remember { mutableStateOf(setOf<String>()) }
+        // limits to only 3 flavors
+        val chunkedOptions = allOptions.chunked(3)
+        var result by remember { mutableStateOf("") }
+
+
+        //    this took a while
+        val foodCombos = listOf(
+            // Sweet combinations
+            FoodCombo(setOf("Sweet", "Crunchy", "Hot"), "Chocolate Bar"),
+            FoodCombo(setOf("Sweet", "Crunchy", "Cold"), "Ice Cream"),
+            FoodCombo(setOf("Sweet", "Crunchy", "Bitter"), "Candy Bar"),
+            FoodCombo(setOf("Sweet", "Chewy", "Hot"), "Donut"),
+            FoodCombo(setOf("Sweet", "Chewy", "Cold"), "Fruit Salad"),
+            FoodCombo(setOf("Sweet", "Chewy", "Bitter"), "Ginger Candy"),
+            FoodCombo(setOf("Sweet", "Soft", "Hot"), "Apple Pie"),
+            FoodCombo(setOf("Sweet", "Soft", "Cold"), "Frozen Yogurt"),
+            FoodCombo(setOf("Sweet", "Soft", "Bitter"), "Coffee Chocolate Cake"),
+            FoodCombo(setOf("Sweet", "Crispy", "Hot"), "Sweet Potato Fries"),
+            FoodCombo(setOf("Sweet", "Crispy", "Cold"), "Churios"),
+            FoodCombo(setOf("Sweet", "Crispy", "Bitter"), "Dark Chocolate-Covered Pretzels"),
+
+            // Salty combinations
+            FoodCombo(setOf("Salty", "Crunchy", "Hot"), "Pretzels"),
+            FoodCombo(setOf("Salty", "Crunchy", "Cold"), "Salted Cucumbers"),
+            FoodCombo(setOf("Salty", "Crunchy", "Bitter"), "Salted Olives"),
+            FoodCombo(setOf("Salty", "Chewy", "Hot"), "Soft Pretzels"),
+            FoodCombo(setOf("Salty", "Chewy", "Cold"), "Salted Caramel Chews"),
+            FoodCombo(setOf("Salty", "Chewy", "Bitter"), "Pickles"),
+            FoodCombo(setOf("Salty", "Soft", "Hot"), "Pizza"),
+            FoodCombo(setOf("Salty", "Soft", "Cold"), "Ham Sandwich"),
+            FoodCombo(setOf("Salty", "Soft", "Bitter"), "Bread Rolls"),
+            FoodCombo(setOf("Salty", "Crispy", "Hot"), "Fries"),
+            FoodCombo(setOf("Salty", "Crispy", "Cold"), "Tacos"),
+            FoodCombo(setOf("Salty", "Crispy", "Bitter"), "Nachos"),
+
+            // Spicy combinations
+            FoodCombo(setOf("Spicy", "Crunchy", "Hot"), "Spicy Nachos"),
+            FoodCombo(setOf("Spicy", "Crunchy", "Cold"), "Spicy Chips"),
+            FoodCombo(setOf("Spicy", "Crunchy", "Bitter"), "Spicy Arugula Salad"),
+            FoodCombo(setOf("Spicy", "Chewy", "Hot"), "Spicy Wings"),
+            FoodCombo(setOf("Spicy", "Chewy", "Cold"), "Spicy Salsa"),
+            FoodCombo(setOf("Spicy", "Chewy", "Bitter"), "Spicy Burrito"),
+            FoodCombo(setOf("Spicy", "Soft", "Hot"), "Hot Chili"),
+            FoodCombo(setOf("Spicy", "Soft", "Cold"), "Spicy Soup"),
+            FoodCombo(setOf("Spicy", "Soft", "Bitter"), "Spicy Tofu"),
+            FoodCombo(setOf("Spicy", "Crispy", "Hot"), "Spicy Fried Chicken"),
+            FoodCombo(setOf("Spicy", "Crispy", "Cold"), "Spicy Tempura"),
+            FoodCombo(setOf("Spicy", "Crispy", "Bitter"), "Spicy Pizza"),
+
+            // Sour combinations
+            FoodCombo(setOf("Sour", "Crunchy", "Hot"), "Sour Tortilla Chips"),
+            FoodCombo(setOf("Sour", "Crunchy", "Cold"), "Sour Chips"),
+            FoodCombo(setOf("Sour", "Crunchy", "Bitter"), "Sour Crackers"),
+            FoodCombo(setOf("Sour", "Chewy", "Hot"), "Sour Gummy Bears"),
+            FoodCombo(setOf("Sour", "Chewy", "Cold"), "Sour Yogurt"),
+            FoodCombo(setOf("Sour", "Chewy", "Bitter"), "Sour Candy"),
+            FoodCombo(setOf("Sour", "Soft", "Hot"), "Sour Pie"),
+            FoodCombo(setOf("Sour", "Soft", "Cold"), "Sour Ice Cream"),
+            FoodCombo(setOf("Sour", "Soft", "Bitter"), "Sour Cake"),
+            FoodCombo(setOf("Sour", "Crispy", "Hot"), "Sour Chips"),
+            FoodCombo(setOf("Sour", "Crispy", "Cold"), "Sour Fries"),
+            FoodCombo(setOf("Sour", "Crispy", "Bitter"), "Sour Crackers"),
+
+            // Umami combinations
+            FoodCombo(setOf("Umami", "Crunchy", "Hot"), "Umami Fries"),
+            FoodCombo(setOf("Umami", "Crunchy", "Cold"), "Umami Chips"),
+            FoodCombo(setOf("Umami", "Crunchy", "Bitter"), "Umami Popcorn"),
+            FoodCombo(setOf("Umami", "Chewy", "Hot"), "Umami Burgers"),
+            FoodCombo(setOf("Umami", "Chewy", "Cold"), "Umami Wrap"),
+            FoodCombo(setOf("Umami", "Chewy", "Bitter"), "Umami Sandwich"),
+            FoodCombo(setOf("Umami", "Soft", "Hot"), "Umami Rice"),
+            FoodCombo(setOf("Umami", "Soft", "Cold"), "Cold Sushi"),
+            FoodCombo(setOf("Umami", "Soft", "Bitter"), "Umami Soup"),
+            FoodCombo(setOf("Umami", "Crispy", "Hot"), "Crispy Tempeh"),
+            FoodCombo(setOf("Umami", "Crispy", "Cold"), "Tempura"),
+            FoodCombo(setOf("Umami", "Crispy", "Bitter"), "Fried Tofu")
+        )
 
         Scaffold(
             topBar = {
@@ -57,21 +143,10 @@ fun CravologyApp() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+
                 // middle text
                 Text("Choose up to 3 cravings:", fontSize = 18.sp)
 
-                // flavor lists
-                val allOptions = listOf(
-                    "Salty", "Sweet", "Spicy", "Sour", "Umami",
-                    "Crunchy", "Soft", "Chewy", "Crispy",
-                    "Hot", "Cold", "Bitter"
-                )
-
-                // tracking the flavors
-                var selectedOptions by remember { mutableStateOf(setOf<String>()) }
-
-                // limits to only 3 flavors
-                val chunkedOptions = allOptions.chunked(3)
 
                 // column
                 Column(
@@ -118,7 +193,26 @@ fun CravologyApp() {
                         }
                     }
                 }
+
+                // resu;t button
+                Button(
+                    onClick = {
+                        val match = foodCombos.find { it.tags == selectedOptions }
+                        result = match?.snack ?: "What are you craving? Try a different combo!"
+                    },
+                    enabled = selectedOptions.size == 3
+                ) {
+                    Text("What do I Crave!?")
+                }
+                Text(
+                    text = result,
+                    fontSize = 22.sp,
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
 }
+
+// the class of combos for the flalvors
+data class FoodCombo(val tags: Set<String>, val snack: String)
