@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -51,7 +53,7 @@ fun CravologyApp() {
         // limits to only 3 flavors
         val chunkedOptions = allOptions.chunked(3)
         var result by remember { mutableStateOf("") }
-
+        var showDialog by remember { mutableStateOf(false) }
 
         //    this took a while
         val foodCombos = listOf(
@@ -126,6 +128,19 @@ fun CravologyApp() {
             FoodCombo(setOf("Umami", "Crispy", "Bitter"), "Fried Tofu")
         )
 
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("How it works") },
+                text = { Text("Pick up to 3 cravings. We'll find a snack that matches your vibe!") },
+                confirmButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text("Got it!")
+                    }
+                }
+            )
+        }
+
         Scaffold(
             topBar = {
                 // Added a centered top app bar with the app name
@@ -143,6 +158,12 @@ fun CravologyApp() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                //pop up instructions
+                ClickableText(
+                    text = AnnotatedString("Need help? Tap here."),
+                    onClick = { showDialog = true },
+                    style = LocalTextStyle.current.copy(fontSize = 14.sp)
+                )
 
                 // middle text
                 Text("Choose up to 3 cravings:", fontSize = 18.sp)
