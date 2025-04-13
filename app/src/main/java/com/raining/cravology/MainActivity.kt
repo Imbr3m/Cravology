@@ -216,8 +216,11 @@ fun CravologyApp() {
                                         }
                                     },
                                     label = {
-                                        //made a column for the icon and text
-                                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        //made a column for icon and text
+                                        Column(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalAlignment = Alignment.CenterHorizontally //center the stuff
+                                        ) {
                                             Icon(
                                                 painter = painterResource(id = getIconForOption(option)),
                                                 contentDescription = option,
@@ -225,7 +228,8 @@ fun CravologyApp() {
                                             )
                                             Text(option)
                                         }
-                                    },
+                                    }
+                                    ,
                                     modifier = Modifier
                                         .size(100.dp)
                                         .border(0.dp, Color.Gray, RoundedCornerShape(8.dp)), //border radius
