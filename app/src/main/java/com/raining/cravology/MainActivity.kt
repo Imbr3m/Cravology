@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,6 +32,26 @@ class MainActivity : ComponentActivity() {
         setContent {
             CravologyApp() // main composable
         }
+    }
+}
+
+//so the icon mathches
+@Composable
+fun getIconForOption(option: String): Int {
+    return when (option) {
+        "Salty" -> R.drawable.salty
+        "Sweet" -> R.drawable.sweet
+        "Spicy" -> R.drawable.spicy
+        "Sour" -> R.drawable.sour
+        "Umami" -> R.drawable.umami
+        "Crunchy" -> R.drawable.crunchy
+        "Soft" -> R.drawable.soft
+        "Chewy" -> R.drawable.chewy
+        "Crispy" -> R.drawable.crispy
+        "Hot" -> R.drawable.hot
+        "Cold" -> R.drawable.cold
+        "Bitter" -> R.drawable.bitter
+        else -> R.drawable.salty // if no matchs
     }
 }
 
@@ -195,18 +216,20 @@ fun CravologyApp() {
                                         }
                                     },
                                     label = {
-                                        // to center the text i made a div thingie
-                                        Box(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            contentAlignment = Alignment.Center
-                                        ) {
+                                        //made a column for the icon and text
+                                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                            Icon(
+                                                painter = painterResource(id = getIconForOption(option)),
+                                                contentDescription = option,
+                                                modifier = Modifier.size(44.dp)
+                                            )
                                             Text(option)
                                         }
                                     },
                                     modifier = Modifier
                                         .size(100.dp)
                                         .border(0.dp, Color.Gray, RoundedCornerShape(8.dp)), //border radius
-                                    colors = AssistChipDefaults.assistChipColors(
+                                        colors = AssistChipDefaults.assistChipColors(
                                         containerColor = if (isSelected) Color(0xFFBBDEFB) else Color.LightGray //change color when clicked
                                     )
                                 )
