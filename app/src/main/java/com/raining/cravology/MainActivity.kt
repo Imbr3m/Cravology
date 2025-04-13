@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -60,8 +61,9 @@ fun getIconForOption(option: String): Int {
 @Composable
 fun CravologyApp() {
     // Surface will be the container for everything
-    Surface(color = MaterialTheme.colorScheme.background) {
-
+    Surface(modifier = Modifier.fillMaxSize(),
+            color = Color(0xFFFFF8E1)
+    ) {
         // flavor lists
         val allOptions = listOf(
             "Salty", "Sweet", "Spicy", "Sour", "Umami",
@@ -163,10 +165,20 @@ fun CravologyApp() {
         }
 
         Scaffold(
-            topBar = {
-                // Added a centered top app bar with the app name
+            containerColor = Color(0xFFFFF8E1), //bg color
+            topBar = { // cravology title
                 CenterAlignedTopAppBar(
-                    title = { Text("Cravology") }
+                    title = {
+                        Text(
+                            "Cravology",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    },
+                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                        containerColor = Color(0xFFBBDEFB),
+                        titleContentColor = Color.Black
+                    )
                 )
             }
         ) { padding ->
@@ -232,9 +244,9 @@ fun CravologyApp() {
                                     ,
                                     modifier = Modifier
                                         .size(100.dp)
-                                        .border(0.dp, Color.Gray, RoundedCornerShape(8.dp)), //border radius
+                                        .border(2.dp, Color.Gray, RoundedCornerShape(8.dp)), //border radius
                                         colors = AssistChipDefaults.assistChipColors(
-                                        containerColor = if (isSelected) Color(0xFFBBDEFB) else Color.LightGray //change color when clicked
+                                        containerColor = if (isSelected) Color(0xFFBBDEFB) else Color(0xFFBBDEFB) //change color when clicked
                                     )
                                 )
                             }
@@ -248,13 +260,22 @@ fun CravologyApp() {
                         val match = foodCombos.find { it.tags == selectedOptions }
                         result = match?.snack ?: "What are you craving? Try a different combo!"
                     },
-                    enabled = selectedOptions.size == 3
+                    enabled = selectedOptions.size == 3,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFF7043),
+                        contentColor = Color.White // text colorr
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth() // stretches full width
+                        .height(60.dp)  // makes it taller
+                        .padding(horizontal = 16.dp) // optional side padding
                 ) {
-                    Text("What do I Crave!?")
+                    Text("What do I Crave!?",
+                        fontSize = 20.sp)
                 }
                 Text(
                     text = result,
-                    fontSize = 22.sp,
+                    fontSize = 32.sp,
                     textAlign = TextAlign.Center
                 )
             }
