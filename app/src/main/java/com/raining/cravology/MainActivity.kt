@@ -289,7 +289,6 @@ fun CravologyApp() {
                     fontSize = 32.sp,
                     textAlign = TextAlign.Center,
                     fontFamily = custom,
-                    modifier = Modifier.padding(top = 50.dp)
                 )
             }
         }
