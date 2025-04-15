@@ -19,10 +19,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+
 
 
 class MainActivity : ComponentActivity() {
@@ -62,7 +66,7 @@ fun getIconForOption(option: String): Int {
 fun CravologyApp() {
     // Surface will be the container for everything
     Surface(modifier = Modifier.fillMaxSize(),
-            color = Color(0xFFFFF8E1)
+            color = Color(0xFF391E10)
     ) {
         // flavor lists
         val allOptions = listOf(
@@ -77,6 +81,11 @@ fun CravologyApp() {
         val chunkedOptions = allOptions.chunked(3)
         var result by remember { mutableStateOf("") }
         var showDialog by remember { mutableStateOf(false) }
+
+        // fonts
+        val custom = FontFamily(
+            Font(R.font.author)
+        )
 
         //    this took a while
         val foodCombos = listOf(
@@ -154,30 +163,31 @@ fun CravologyApp() {
         if (showDialog) {
             AlertDialog(
                 onDismissRequest = { showDialog = false },
-                title = { Text("How it works") },
-                text = { Text("Pick up to 3 cravings. We'll find a snack that matches your vibe!") },
+                title = { Text("How it works", fontFamily = custom) },
+                text = { Text("Pick up to 3 cravings. We'll find a snack that matches your vibe!", fontFamily = custom) },
                 confirmButton = {
                     TextButton(onClick = { showDialog = false }) {
-                        Text("Got it!")
+                        Text("Got it!", fontFamily = custom)
                     }
                 }
             )
         }
 
         Scaffold(
-            containerColor = Color(0xFFFFF8E1), //bg color
+            containerColor = Color(0xFFE2CEB1), //bg color
             topBar = { // cravology title
                 CenterAlignedTopAppBar(
                     title = {
                         Text(
                             "Cravology",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold
+                            fontSize = 45.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = custom
                         )
                     },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = Color(0xFFBBDEFB),
-                        titleContentColor = Color.Black
+                        containerColor = Color(0xFFFDFCE8),
+                        titleContentColor = Color(0xFF391E10)
                     )
                 )
             }
@@ -193,13 +203,13 @@ fun CravologyApp() {
             ) {
                 //pop up instructions
                 ClickableText(
-                    text = AnnotatedString("Need help? Tap here."),
+                    text = AnnotatedString("Need help? Tap here.", spanStyle = SpanStyle(fontFamily = custom)),
                     onClick = { showDialog = true },
                     style = LocalTextStyle.current.copy(fontSize = 14.sp)
                 )
 
                 // middle text
-                Text("Choose up to 3 cravings:", fontSize = 18.sp)
+                Text("Choose up to 3 cravings:", fontSize = 18.sp, fontFamily = custom)
 
 
                 // column
@@ -238,7 +248,7 @@ fun CravologyApp() {
                                                 contentDescription = option,
                                                 modifier = Modifier.size(44.dp)
                                             )
-                                            Text(option)
+                                            Text(option, fontFamily = custom, fontSize = 13.sp)
                                         }
                                     }
                                     ,
@@ -246,7 +256,7 @@ fun CravologyApp() {
                                         .size(100.dp)
                                         .border(2.dp, Color.Gray, RoundedCornerShape(8.dp)), //border radius
                                         colors = AssistChipDefaults.assistChipColors(
-                                        containerColor = if (isSelected) Color(0xFFBBDEFB) else Color(0xFFBBDEFB) //change color when clicked
+                                        containerColor = if (isSelected) Color(0xFFC7A07A) else Color(0xFFFDFCE8) //change color when clicked
                                     )
                                 )
                             }
@@ -262,21 +272,24 @@ fun CravologyApp() {
                     },
                     enabled = selectedOptions.size == 3,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFFF7043),
-                        contentColor = Color.White // text colorr
+                        containerColor = Color(0xFF734128), //button color
+                        contentColor = Color(0xFFE2CEB1) // text colorr
                     ),
                     modifier = Modifier
-                        .fillMaxWidth() // stretches full width
-                        .height(60.dp)  // makes it taller
-                        .padding(horizontal = 16.dp) // optional side padding
+                        .padding(horizontal = 16.dp)
+                        .height(60.dp)
+                        .fillMaxWidth()
+
                 ) {
-                    Text("What do I Crave!?",
+                    Text("What do I Crave!?", fontFamily = custom,
                         fontSize = 20.sp)
                 }
                 Text(
                     text = result,
                     fontSize = 32.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    fontFamily = custom,
+                    modifier = Modifier.padding(top = 50.dp)
                 )
             }
         }
