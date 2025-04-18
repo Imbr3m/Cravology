@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">>
+<resources>
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">#734128</item>
+        <item name="colorPrimaryDark">#391E10</item>
+        <item name="colorAccent">#C7A07A</item>
 
-    <style name="Theme.Cravology" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/light_brown</item>
-        <item name="android:windowSplashScreenAnimatedIcon" tools:targetApi="31">@drawable/splash_logo</item>
-        <item name="android:windowSplashScreenIconBackgroundColor" tools:targetApi="31">@color/brown</item>
-        <item name="android:windowSplashScreenAnimationDuration" tools:targetApi="31">0</item>
+        <!-- Background color -->
+        <item name="android:windowBackground">#E2CEB1</item>
+
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">#391E10</item>
     </style>
 
+    <style name="Theme.Cravology" parent="AppTheme">
+        <!-- Any additional customizations specific to this theme -->
+    </style>
 </resources>

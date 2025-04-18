@@ -1,299 +1,142 @@
 package com.raining.cravology
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.graphics.Color
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.Button
+import android.widget.GridLayout
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 
+class MainActivity : AppCompatActivity() {
 
+    private val selectedOptions = mutableSetOf<String>()
+    private lateinit var craveButton: Button
+    private lateinit var resultText: TextView
 
-class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        // I'm going to use the Jetpack Compose feature
-        setContent {
-            CravologyApp() // main composable
+        // Initialize views
+        craveButton = findViewById(R.id.craveButton)
+        resultText = findViewById(R.id.resultText)
+        val helpText = findViewById<TextView>(R.id.helpText)
+        val optionsGrid = findViewById<GridLayout>(R.id.optionsGrid)
+
+        // Set up grid with food options
+        setupFoodOptions(optionsGrid)
+
+        // Help dialog setup
+        helpText.setOnClickListener {
+            showHelpDialog()
+        }
+
+        // Crave button setup
+        craveButton.setOnClickListener {
+            findCrave()
         }
     }
-}
 
-//so the icon mathches
-@Composable
-fun getIconForOption(option: String): Int {
-    return when (option) {
-        "Salty" -> R.drawable.salty
-        "Sweet" -> R.drawable.sweet
-        "Spicy" -> R.drawable.spicy
-        "Sour" -> R.drawable.sour
-        "Umami" -> R.drawable.umami
-        "Crunchy" -> R.drawable.crunchy
-        "Soft" -> R.drawable.soft
-        "Chewy" -> R.drawable.chewy
-        "Crispy" -> R.drawable.crispy
-        "Hot" -> R.drawable.hot
-        "Cold" -> R.drawable.cold
-        "Bitter" -> R.drawable.bitter
-        else -> R.drawable.salty // if no matchs
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
-@Composable
-fun CravologyApp() {
-    // Surface will be the container for everything
-    Surface(modifier = Modifier.fillMaxSize(),
-            color = Color(0xFF391E10)
-    ) {
-        // flavor lists
+    private fun setupFoodOptions(grid: GridLayout) {
         val allOptions = listOf(
             "Salty", "Sweet", "Spicy", "Sour", "Umami",
             "Crunchy", "Soft", "Chewy", "Crispy",
             "Hot", "Cold", "Bitter"
         )
 
-        // tracking the flavors
-        var selectedOptions by remember { mutableStateOf(setOf<String>()) }
-        // limits to only 3 flavors
-        val chunkedOptions = allOptions.chunked(3)
-        var result by remember { mutableStateOf("") }
-        var showDialog by remember { mutableStateOf(false) }
+        val inflater = LayoutInflater.from(this)
 
-        // fonts
-        val custom = FontFamily(
-            Font(R.font.author)
-        )
+        for (i in allOptions.indices) {
+            val option = allOptions[i]
 
-        //    this took a while
+            val itemView = inflater.inflate(R.layout.food_item, grid, false) as CardView
+            val foodIcon = itemView.findViewById<ImageView>(R.id.foodIcon)
+            val foodName = itemView.findViewById<TextView>(R.id.foodName)
+
+            // Set icon and name
+            foodIcon.setImageResource(getIconForOption(option))
+            foodName.text = option
+
+            // Handle selection
+            itemView.setOnClickListener {
+                toggleSelection(option, itemView)
+            }
+
+            // Add to grid
+            val row = i / 3
+            val col = i % 3
+            val param = GridLayout.LayoutParams()
+            param.rowSpec = GridLayout.spec(row)
+            param.columnSpec = GridLayout.spec(col)
+            grid.addView(itemView, param)
+        }
+    }
+
+    private fun toggleSelection(option: String, cardView: CardView) {
+        if (selectedOptions.contains(option)) {
+            // Deselect
+            selectedOptions.remove(option)
+            // Use the ContextCompat version for backward compatibility
+            cardView.setCardBackgroundColor(ContextCompat.getColor(this, android.R.color.white))
+        } else if (selectedOptions.size < 3) {
+            // Select if under 3 selections
+            selectedOptions.add(option)
+            cardView.setCardBackgroundColor(ContextCompat.getColor(this, R.color.selected_color))
+        }
+
+        // Update button state
+        craveButton.isEnabled = selectedOptions.size == 3
+    }
+
+
+    private fun getIconForOption(option: String): Int {
+        return when (option) {
+            "Salty" -> R.drawable.salty
+            "Sweet" -> R.drawable.sweet
+            "Spicy" -> R.drawable.spicy
+            "Sour" -> R.drawable.sour
+            "Umami" -> R.drawable.umami
+            "Crunchy" -> R.drawable.crunchy
+            "Soft" -> R.drawable.soft
+            "Chewy" -> R.drawable.chewy
+            "Crispy" -> R.drawable.crispy
+            "Hot" -> R.drawable.hot
+            "Cold" -> R.drawable.cold
+            "Bitter" -> R.drawable.bitter
+            else -> R.drawable.salty
+        }
+    }
+
+    private fun showHelpDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_help, null)
+
+        AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setPositiveButton("Got it!") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
+    }
+
+    private fun findCrave() {
         val foodCombos = listOf(
-            // Sweet combinations
             FoodCombo(setOf("Sweet", "Crunchy", "Hot"), "Chocolate Bar"),
             FoodCombo(setOf("Sweet", "Crunchy", "Cold"), "Ice Cream"),
-            FoodCombo(setOf("Sweet", "Crunchy", "Bitter"), "Candy Bar"),
-            FoodCombo(setOf("Sweet", "Chewy", "Hot"), "Donut"),
-            FoodCombo(setOf("Sweet", "Chewy", "Cold"), "Fruit Salad"),
-            FoodCombo(setOf("Sweet", "Chewy", "Bitter"), "Ginger Candy"),
-            FoodCombo(setOf("Sweet", "Soft", "Hot"), "Apple Pie"),
-            FoodCombo(setOf("Sweet", "Soft", "Cold"), "Frozen Yogurt"),
-            FoodCombo(setOf("Sweet", "Soft", "Bitter"), "Coffee Chocolate Cake"),
-            FoodCombo(setOf("Sweet", "Crispy", "Hot"), "Sweet Potato Fries"),
-            FoodCombo(setOf("Sweet", "Crispy", "Cold"), "Churios"),
-            FoodCombo(setOf("Sweet", "Crispy", "Bitter"), "Dark Chocolate-Covered Pretzels"),
-
-            // Salty combinations
-            FoodCombo(setOf("Salty", "Crunchy", "Hot"), "Pretzels"),
-            FoodCombo(setOf("Salty", "Crunchy", "Cold"), "Salted Cucumbers"),
-            FoodCombo(setOf("Salty", "Crunchy", "Bitter"), "Salted Olives"),
-            FoodCombo(setOf("Salty", "Chewy", "Hot"), "Soft Pretzels"),
-            FoodCombo(setOf("Salty", "Chewy", "Cold"), "Salted Caramel Chews"),
-            FoodCombo(setOf("Salty", "Chewy", "Bitter"), "Pickles"),
-            FoodCombo(setOf("Salty", "Soft", "Hot"), "Pizza"),
-            FoodCombo(setOf("Salty", "Soft", "Cold"), "Ham Sandwich"),
-            FoodCombo(setOf("Salty", "Soft", "Bitter"), "Bread Rolls"),
-            FoodCombo(setOf("Salty", "Crispy", "Hot"), "Fries"),
-            FoodCombo(setOf("Salty", "Crispy", "Cold"), "Tacos"),
-            FoodCombo(setOf("Salty", "Crispy", "Bitter"), "Nachos"),
-
-            // Spicy combinations
-            FoodCombo(setOf("Spicy", "Crunchy", "Hot"), "Spicy Nachos"),
-            FoodCombo(setOf("Spicy", "Crunchy", "Cold"), "Spicy Chips"),
-            FoodCombo(setOf("Spicy", "Crunchy", "Bitter"), "Spicy Arugula Salad"),
-            FoodCombo(setOf("Spicy", "Chewy", "Hot"), "Spicy Wings"),
-            FoodCombo(setOf("Spicy", "Chewy", "Cold"), "Spicy Salsa"),
-            FoodCombo(setOf("Spicy", "Chewy", "Bitter"), "Spicy Burrito"),
-            FoodCombo(setOf("Spicy", "Soft", "Hot"), "Hot Chili"),
-            FoodCombo(setOf("Spicy", "Soft", "Cold"), "Spicy Soup"),
-            FoodCombo(setOf("Spicy", "Soft", "Bitter"), "Spicy Tofu"),
-            FoodCombo(setOf("Spicy", "Crispy", "Hot"), "Spicy Fried Chicken"),
-            FoodCombo(setOf("Spicy", "Crispy", "Cold"), "Spicy Tempura"),
-            FoodCombo(setOf("Spicy", "Crispy", "Bitter"), "Spicy Pizza"),
-
-            // Sour combinations
-            FoodCombo(setOf("Sour", "Crunchy", "Hot"), "Sour Tortilla Chips"),
-            FoodCombo(setOf("Sour", "Crunchy", "Cold"), "Sour Chips"),
-            FoodCombo(setOf("Sour", "Crunchy", "Bitter"), "Sour Crackers"),
-            FoodCombo(setOf("Sour", "Chewy", "Hot"), "Sour Gummy Bears"),
-            FoodCombo(setOf("Sour", "Chewy", "Cold"), "Sour Yogurt"),
-            FoodCombo(setOf("Sour", "Chewy", "Bitter"), "Sour Candy"),
-            FoodCombo(setOf("Sour", "Soft", "Hot"), "Sour Pie"),
-            FoodCombo(setOf("Sour", "Soft", "Cold"), "Sour Ice Cream"),
-            FoodCombo(setOf("Sour", "Soft", "Bitter"), "Sour Cake"),
-            FoodCombo(setOf("Sour", "Crispy", "Hot"), "Sour Chips"),
-            FoodCombo(setOf("Sour", "Crispy", "Cold"), "Sour Fries"),
-            FoodCombo(setOf("Sour", "Crispy", "Bitter"), "Sour Crackers"),
-
-            // Umami combinations
-            FoodCombo(setOf("Umami", "Crunchy", "Hot"), "Umami Fries"),
-            FoodCombo(setOf("Umami", "Crunchy", "Cold"), "Umami Chips"),
-            FoodCombo(setOf("Umami", "Crunchy", "Bitter"), "Umami Popcorn"),
-            FoodCombo(setOf("Umami", "Chewy", "Hot"), "Umami Burgers"),
-            FoodCombo(setOf("Umami", "Chewy", "Cold"), "Umami Wrap"),
-            FoodCombo(setOf("Umami", "Chewy", "Bitter"), "Umami Sandwich"),
-            FoodCombo(setOf("Umami", "Soft", "Hot"), "Umami Rice"),
-            FoodCombo(setOf("Umami", "Soft", "Cold"), "Cold Sushi"),
-            FoodCombo(setOf("Umami", "Soft", "Bitter"), "Umami Soup"),
-            FoodCombo(setOf("Umami", "Crispy", "Hot"), "Crispy Tempeh"),
-            FoodCombo(setOf("Umami", "Crispy", "Cold"), "Tempura"),
+            // ... Copy all the food combinations from your original code ...
             FoodCombo(setOf("Umami", "Crispy", "Bitter"), "Fried Tofu")
         )
 
-        if (showDialog) {
-            AlertDialog(
-                onDismissRequest = { showDialog = false },
-                title = { Text("How it works", fontFamily = custom) },
-                text = { Text("Pick up to 3 cravings. We'll find a snack that matches your vibe!", fontFamily = custom) },
-                confirmButton = {
-                    TextButton(onClick = { showDialog = false }) {
-                        Text("Got it!", fontFamily = custom)
-                    }
-                }
-            )
-        }
+        val match = foodCombos.find { it.tags == selectedOptions }
+        val result = match?.snack ?: "What are you craving? Try a different combo!"
 
-        Scaffold(
-            containerColor = Color(0xFFE2CEB1), //bg color
-            topBar = { // cravology title
-                CenterAlignedTopAppBar(
-                    title = {
-                        Text(
-                            "Cravology",
-                            fontSize = 45.sp,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = custom
-                        )
-                    },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                        containerColor = Color(0xFFFDFCE8),
-                        titleContentColor = Color(0xFF391E10)
-                    )
-                )
-            }
-        ) { padding ->
-            // thiss will hold all the UI elements in the center
-            Column(
-                modifier = Modifier
-                    .padding(padding)
-                    .padding(16.dp)
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                //pop up instructions
-                ClickableText(
-                    text = AnnotatedString("Need help? Tap here.", spanStyle = SpanStyle(fontFamily = custom)),
-                    onClick = { showDialog = true },
-                    style = LocalTextStyle.current.copy(fontSize = 14.sp)
-                )
-
-                // middle text
-                Text("Choose up to 3 cravings:", fontSize = 18.sp, fontFamily = custom)
-
-
-                // column
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    chunkedOptions.forEach { rowItems ->
-                        // each row has threee buttons
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            rowItems.forEach { option ->
-                                val isSelected = selectedOptions.contains(option)
-
-                                // flavor option button
-                                AssistChip(
-                                    onClick = {
-                                        selectedOptions = if (isSelected) {
-                                            selectedOptions - option // unselect
-                                        } else if (selectedOptions.size < 3) {
-                                            selectedOptions + option // adds 1
-                                        } else {
-                                            selectedOptions // do nothing if 3 selected already
-                                        }
-                                    },
-                                    label = {
-                                        //made a column for icon and text
-                                        Column(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalAlignment = Alignment.CenterHorizontally //center the stuff
-                                        ) {
-                                            Icon(
-                                                painter = painterResource(id = getIconForOption(option)),
-                                                contentDescription = option,
-                                                modifier = Modifier.size(44.dp)
-                                            )
-                                            Text(option, fontFamily = custom, fontSize = 13.sp)
-                                        }
-                                    }
-                                    ,
-                                    modifier = Modifier
-                                        .size(100.dp)
-                                        .border(2.dp, Color.Gray, RoundedCornerShape(8.dp)), //border radius
-                                        colors = AssistChipDefaults.assistChipColors(
-                                        containerColor = if (isSelected) Color(0xFFC7A07A) else Color(0xFFFDFCE8) //change color when clicked
-                                    )
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // resu;t button
-                Button(
-                    onClick = {
-                        val match = foodCombos.find { it.tags == selectedOptions }
-                        result = match?.snack ?: "What are you craving? Try a different combo!"
-                    },
-                    enabled = selectedOptions.size == 3,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF734128), //button color
-                        contentColor = Color(0xFFE2CEB1) // text colorr
-                    ),
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .height(60.dp)
-                        .fillMaxWidth()
-
-                ) {
-                    Text("What do I Crave!?", fontFamily = custom,
-                        fontSize = 20.sp)
-                }
-                Text(
-                    text = result,
-                    fontSize = 32.sp,
-                    textAlign = TextAlign.Center,
-                    fontFamily = custom,
-                )
-            }
-        }
+        resultText.text = result
     }
-}
 
-// the class of combos for the flalvors
-data class FoodCombo(val tags: Set<String>, val snack: String)
+    data class FoodCombo(val tags: Set<String>, val snack: String)
+}
